@@ -55,6 +55,13 @@ export default function UploadResume() {
     return null;
   }
 
+  // Redirect anonymous users to Auth before allowing upload
+  if (user.isAnonymous) {
+    toast.info("Please log in to upload your resume.");
+    navigate("/auth");
+    return null;
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
