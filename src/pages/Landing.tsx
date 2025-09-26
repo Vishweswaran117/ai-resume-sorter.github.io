@@ -12,24 +12,24 @@ export default function Landing() {
 
   const features = [
     {
-      icon: FileText,
-      title: "Smart Resume Upload",
-      description: "Upload your resume and personal details with our intuitive form system"
+      icon: Zap,
+      title: "Algorithmic Scoring",
+      description: "See how the PM internship resume filtering algorithm scores candidates"
     },
     {
-      icon: Zap,
-      title: "AI-Powered Analysis",
-      description: "Advanced AI algorithms analyze and score resumes for optimal matching"
+      icon: FileText,
+      title: "Transparent Justification",
+      description: "View the reasoning behind each score, including skills and experience"
     },
     {
       icon: Users,
-      title: "Admin Dashboard",
-      description: "Comprehensive admin panel to review, shortlist, and manage applications"
+      title: "PM Role Focus",
+      description: "Tailored evaluation for PM internship applications and criteria"
     },
     {
       icon: Shield,
-      title: "Secure & Private",
-      description: "Your data is protected with enterprise-grade security measures"
+      title: "Secure Uploads",
+      description: "Your documents are uploaded securely using Convex file storage"
     }
   ];
 
@@ -55,7 +55,7 @@ export default function Landing() {
             className="flex items-center gap-3"
           >
             <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
-            <span className="text-2xl font-bold text-white">Resume Portal</span>
+            <span className="text-2xl font-bold text-white">PM Internship Portal</span>
           </motion.div>
           
           <motion.div
@@ -98,7 +98,7 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto">
-              Submit your resume and details to get started
+              Demo UI to showcase our PM internship resume filtering algorithm. Upload your resume to see scoring and reasoning.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -134,10 +134,10 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Powerful Features
+              Algorithm Highlights
             </h2>
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Everything you need to streamline your recruitment process
+              Upload a resume and observe how the filtering logic evaluates PM internship candidates
             </p>
           </motion.div>
 
@@ -177,7 +177,7 @@ export default function Landing() {
                 Why Choose Our Platform?
               </h2>
               <p className="text-xl text-white/70 mb-8">
-                Transform your hiring process with cutting-edge technology and intelligent automation
+                This interface is built to visualize the PM internship filtering algorithm—see scores, reasons, and extracted skills in real-time.
               </p>
               
               <div className="space-y-4">
@@ -232,7 +232,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-            <span className="text-xl font-bold text-white">Resume Portal</span>
+            <span className="text-xl font-bold text-white">PM Internship Portal</span>
           </div>
           <p className="text-white/60">
             Powered by AI • Built with ❤️ • Secured by{" "}
