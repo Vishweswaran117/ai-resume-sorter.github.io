@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 interface AuthProps {
   redirectAfterAuth?: string;
@@ -31,6 +32,22 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper to extract readable error messages
+  const parseErrorMessage = (err: unknown): string => {
+    if (err instanceof Error) {
+      try {
+        // Try to parse nested error JSON from provider
+        const parsed = JSON.parse(err.message);
+        if (parsed?.message) return parsed.message;
+        return err.message;
+      } catch {
+        return err.message;
+      }
+    }
+    if (typeof err === "string") return err;
+    return "Something went wrong. Please try again.";
+  };
+
   useEffect(() => {
     // Only redirect if authenticated and not anonymous
     if (!authLoading && isAuthenticated && user && !user.isAnonymous) {
@@ -38,23 +55,30 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth, user]);
+
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
+      const rawEmail = (formData.get("email") as string) || "";
+      const email = rawEmail.trim().toLowerCase();
+      if (!email) {
+        throw new Error("Please enter your email.");
+      }
+      formData.set("email", email);
+
       await signIn("email-otp", formData);
-      setStep({ email: formData.get("email") as string });
+      setStep({ email });
       setIsLoading(false);
+      toast.success("Verification code sent to your email.");
     } catch (error) {
+      const msg = parseErrorMessage(error);
       console.error("Email sign-in error:", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to send verification code. Please try again.",
-      );
+      setError(msg);
       setIsLoading(false);
+      toast.error(msg);
     }
   };
 
@@ -67,16 +91,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       await signIn("email-otp", formData);
 
       console.log("signed in");
+      toast.success("Logged in successfully.");
 
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
       console.error("OTP verification error:", error);
-
-      setError("The verification code you entered is incorrect.");
+      const msg = "The verification code you entered is incorrect.";
+      setError(msg);
       setIsLoading(false);
-
       setOtp("");
+      toast.error(msg);
     }
   };
 
@@ -87,13 +112,16 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       console.log("Attempting anonymous sign in...");
       await signIn("anonymous");
       console.log("Anonymous sign in successful");
+      toast.success("Continuing as guest.");
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
       console.error("Guest login error:", error);
       console.error("Error details:", JSON.stringify(error, null, 2));
-      setError(`Failed to sign in as guest: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const msg = `Failed to sign in as guest: ${error instanceof Error ? error.message : "Unknown error"}`;
+      setError(msg);
       setIsLoading(false);
+      toast.error(msg);
     }
   };
 
