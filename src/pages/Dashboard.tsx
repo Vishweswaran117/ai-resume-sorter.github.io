@@ -94,7 +94,7 @@ export default function Dashboard() {
                 </p>
                 <GlassButton
                   onClick={() => navigate("/applications")}
-                  variant="secondary"
+                  glassVariant="secondary"
                   className="w-full"
                 >
                   View Status
@@ -111,7 +111,7 @@ export default function Dashboard() {
                   <p className="text-white/70 mb-4">Review and manage applications</p>
                   <GlassButton
                     onClick={() => navigate("/admin")}
-                    variant="primary"
+                    glassVariant="primary"
                     className="w-full"
                   >
                     Manage

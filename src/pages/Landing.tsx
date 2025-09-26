@@ -104,7 +104,7 @@ export default function Landing() {
               
               <GlassButton
                 size="lg"
-                variant="secondary"
+                glassVariant="secondary"
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
                 className="text-lg px-8 py-4"
               >

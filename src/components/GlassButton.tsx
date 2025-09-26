@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 import { forwardRef } from "react";
 
 interface GlassButtonProps extends React.ComponentProps<typeof Button> {
-  variant?: "primary" | "secondary" | "ghost";
+  // Rename to avoid conflict with shadcn Button's `variant` prop
+  glassVariant?: "primary" | "secondary" | "ghost";
 }
 
 export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
-  ({ className, variant = "primary", children, ...props }, ref) => {
+  ({ className, glassVariant = "primary", children, ...props }, ref) => {
     const variants = {
       primary: "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-white/30 text-white hover:from-blue-500/30 hover:to-purple-500/30",
       secondary: "bg-white/10 border-white/20 text-white hover:bg-white/20",
@@ -22,7 +23,7 @@ export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
           className={cn(
             "backdrop-blur-xl border rounded-xl shadow-lg",
             "transition-all duration-200",
-            variants[variant],
+            variants[glassVariant],
             className
           )}
           {...props}
