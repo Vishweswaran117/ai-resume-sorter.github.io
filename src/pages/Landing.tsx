@@ -281,17 +281,7 @@ export default function Landing() {
             />
             <span className="text-xl font-bold text-white">PM Internship Portal</span>
           </div>
-          <p className="text-white/60">
-            Powered by AI • Built with ❤️ • Secured by{" "}
-            <a
-              href="https://vly.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              vly.ai
-            </a>
-          </p>
+          <p className="text-white/60">copyright @Digital Dinos</p>
         </div>
       </footer>
     </div>
