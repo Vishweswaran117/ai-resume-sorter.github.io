@@ -54,13 +54,7 @@ export const submitResume = mutation({
 export const getAllResumes = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getCurrentUser(ctx);
-    if (!user || user.role !== "admin") {
-      // Instead of throwing (which surfaces as a server error),
-      // return an empty list to avoid noisy errors on the client.
-      return [];
-    }
-
+    // Make admin access open for demo: return all resumes without role restriction
     return await ctx.db
       .query("resumes")
       .withIndex("by_status")
@@ -76,8 +70,9 @@ export const updateResumeStatus = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    if (!user || user.role !== "admin") {
-      throw new Error("Admin access required");
+    // For demo: allow any authenticated user to update statuses
+    if (!user) {
+      throw new Error("Authentication required");
     }
 
     return await ctx.db.patch(args.resumeId, {

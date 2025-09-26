@@ -17,7 +17,7 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const resumes = useQuery(
     api.resumes.getAllResumes,
-    !authLoading && user && user.role === "admin" ? {} : undefined
+    {} // Open access: always query resumes in demo mode
   );
   const updateStatus = useMutation(api.resumes.updateResumeStatus);
   const runAnalysis = useAction(api.ai.analyzeResume);
@@ -31,11 +31,6 @@ export default function AdminPanel() {
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
-  }
-
-  if (!user || user.role !== "admin") {
-    navigate("/dashboard");
-    return null;
   }
 
   const handleStatusUpdate = async (resumeId: string, status: "shortlisted" | "rejected") => {
