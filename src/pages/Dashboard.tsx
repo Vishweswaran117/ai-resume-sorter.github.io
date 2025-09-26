@@ -45,9 +45,15 @@ export default function Dashboard() {
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
               alt="Emblem of India"
-              className="w-10 h-10"
+              className="w-10 h-10 cursor-pointer"
+              onClick={() => navigate("/")}
             />
-            <h1 className="text-2xl font-bold text-white">PM Internship Portal</h1>
+            <h1
+              className="text-2xl font-bold text-white cursor-pointer"
+              onClick={() => navigate("/")}
+            >
+              PM Internship Portal
+            </h1>
           </motion.div>
           
           <div className="flex items-center gap-4">

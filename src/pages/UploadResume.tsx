@@ -120,7 +120,7 @@ export default function UploadResume() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/")}
             className="text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-5 h-5" />
