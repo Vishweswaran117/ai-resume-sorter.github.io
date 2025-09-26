@@ -10,7 +10,7 @@ import { FileText, Upload, Users, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 
 export default function Dashboard() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const userResumes = useQuery(api.resumes.getUserResumes);
 
@@ -72,6 +72,18 @@ export default function Dashboard() {
                 onClick={() => navigate("/auth")}
               >
                 Login
+              </GlassButton>
+            )}
+
+            {!user?.isAnonymous && (
+              <GlassButton
+                glassVariant="secondary"
+                onClick={async () => {
+                  await signOut();
+                  navigate("/");
+                }}
+              >
+                Sign Out
               </GlassButton>
             )}
 

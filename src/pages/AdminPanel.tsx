@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export default function AdminPanel() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const resumes = useQuery(
     api.resumes.getAllResumes,
@@ -104,9 +104,28 @@ export default function AdminPanel() {
             </div>
 
             {/* Right: Accent pill */}
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-3">
               <span className="text-xs text-white/70">Secure Access</span>
               <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              {/* Auth buttons */}
+              {(!user || user.isAnonymous) ? (
+                <GlassButton
+                  glassVariant="secondary"
+                  onClick={() => navigate("/auth")}
+                >
+                  Login
+                </GlassButton>
+              ) : (
+                <GlassButton
+                  glassVariant="secondary"
+                  onClick={async () => {
+                    await signOut();
+                    navigate("/");
+                  }}
+                >
+                  Sign Out
+                </GlassButton>
+              )}
             </div>
           </div>
           {/* Tricolor underline */}
