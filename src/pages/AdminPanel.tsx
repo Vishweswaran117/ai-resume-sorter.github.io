@@ -80,18 +80,39 @@ export default function AdminPanel() {
     <div className="min-h-screen">
       <BackgroundGradient />
       
-      {/* Header */}
-      <header className="relative z-10 p-6">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/dashboard")}
-            className="text-white hover:bg-white/10"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+      {/* Header - Styled Admin Navigation */}
+      <header className="relative z-20 sticky top-0">
+        <div className="mx-auto max-w-7xl px-6 py-3">
+          <div className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl px-4 py-3 shadow-lg">
+            {/* Left: Back + Brand */}
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+                className="text-white hover:bg-white/10"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                alt="Emblem of India"
+                className="w-8 h-8"
+              />
+              <div className="flex flex-col leading-tight">
+                <span className="text-white font-semibold">Admin Panel</span>
+                <span className="text-white/60 text-xs">PM Internship Portal</span>
+              </div>
+            </div>
+
+            {/* Right: Accent pill */}
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-xs text-white/70">Secure Access</span>
+              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+          </div>
+          {/* Tricolor underline */}
+          <div className="mt-1 h-1 w-full rounded-full bg-gradient-to-r from-orange-500 via-white to-green-600 opacity-70" />
         </div>
       </header>
 

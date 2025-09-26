@@ -74,14 +74,6 @@ export default function Landing() {
                 Admin Portal
                 <ArrowRight className="w-4 h-4 ml-2" />
               </GlassButton>
-              {!isLoading && (
-                <GlassButton
-                  onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-                >
-                  {isAuthenticated ? "Dashboard" : "Get Started"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </GlassButton>
-              )}
             </div>
           </motion.div>
         </div>
