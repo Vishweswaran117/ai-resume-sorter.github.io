@@ -14,6 +14,8 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label as UILabel } from "@/components/ui/label";
 
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX, AlertCircle } from "lucide-react";
@@ -32,6 +34,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [rememberedEmail, setRememberedEmail] = useState<string>("");
 
   // Helper to extract readable error messages
   const parseErrorMessage = (err: unknown): string => {
@@ -48,6 +52,22 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     if (typeof err === "string") return err;
     return "Something went wrong. Please try again.";
   };
+
+  useEffect(() => {
+    // Load remembered email on mount
+    try {
+      const saved = localStorage.getItem("rememberedEmail");
+      if (saved) {
+        setRememberedEmail(saved);
+        setRememberMe(true);
+      } else {
+        setRememberMe(false);
+      }
+    } catch {
+      // ignore localStorage errors
+      setRememberMe(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Only redirect if authenticated and not anonymous
@@ -69,6 +89,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
         throw new Error("Please enter your email.");
       }
       formData.set("email", email);
+
+      // Persist or clear remembered email
+      try {
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+      } catch {
+        // ignore localStorage errors
+      }
 
       await signIn("email-otp", formData);
       setStep({ email });
@@ -165,6 +196,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         className={`pl-9 ${error ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         disabled={isLoading}
                         required
+                        // prefill from remembered email
+                        defaultValue={rememberedEmail}
                       />
                     </div>
                     <Button
@@ -180,6 +213,20 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       )}
                     </Button>
                   </div>
+
+                  {/* Remember me row */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <Checkbox
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onCheckedChange={(v) => setRememberMe(Boolean(v))}
+                      disabled={isLoading}
+                    />
+                    <UILabel htmlFor="rememberMe" className="text-sm text-muted-foreground">
+                      Remember me
+                    </UILabel>
+                  </div>
+
                   {error && (
                     <Alert variant="destructive" className="mt-3">
                       <AlertCircle className="h-4 w-4" />

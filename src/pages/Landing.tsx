@@ -8,8 +8,11 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
 export default function Landing() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const navigate = useNavigate();
+
+  // Add derived flag to distinguish real logins from anonymous sessions
+  const isLoggedIn = isAuthenticated && user && !user.isAnonymous;
 
   const features = [
     {
@@ -143,20 +146,20 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <GlassButton
                 size="lg"
-                onClick={() => navigate(isAuthenticated ? "/upload" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/upload" : "/auth")}
                 className="text-lg px-8 py-4"
               >
-                {isAuthenticated ? "Upload Resume" : "Start Application"}
+                {isLoggedIn ? "Upload Resume" : "Start Application"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </GlassButton>
               
               <GlassButton
                 size="lg"
                 glassVariant="secondary"
-                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
                 className="text-lg px-8 py-4"
               >
-                {isAuthenticated ? "View Dashboard" : "Learn More"}
+                {isLoggedIn ? "View Dashboard" : "Learn More"}
               </GlassButton>
             </div>
           </motion.div>
@@ -253,10 +256,10 @@ export default function Landing() {
                   </p>
                   <GlassButton
                     size="lg"
-                    onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                    onClick={() => navigate(isLoggedIn ? "/dashboard" : "/auth")}
                     className="w-full"
                   >
-                    {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                    {isLoggedIn ? "Go to Dashboard" : "Start Free Trial"}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </GlassButton>
                 </div>
