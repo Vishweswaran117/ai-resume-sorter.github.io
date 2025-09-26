@@ -62,14 +62,23 @@ export default function Landing() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            {!isLoading && (
+            <div className="flex items-center gap-3">
               <GlassButton
-                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                glassVariant="secondary"
+                onClick={() => navigate("/admin")}
               >
-                {isAuthenticated ? "Dashboard" : "Get Started"}
+                Admin Portal
                 <ArrowRight className="w-4 h-4 ml-2" />
               </GlassButton>
-            )}
+              {!isLoading && (
+                <GlassButton
+                  onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                >
+                  {isAuthenticated ? "Dashboard" : "Get Started"}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </GlassButton>
+              )}
+            </div>
           </motion.div>
         </div>
       </nav>
