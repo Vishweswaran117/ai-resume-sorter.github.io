@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
 export default function Landing() {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, signOut } = useAuth();
   const navigate = useNavigate();
 
   // Add derived flag to distinguish real logins from anonymous sessions
@@ -112,6 +112,19 @@ export default function Landing() {
               >
                 Login
               </GlassButton>
+
+              {/* Add Sign Out button for logged-in users */}
+              {isLoggedIn && (
+                <GlassButton
+                  glassVariant="secondary"
+                  onClick={async () => {
+                    await signOut();
+                    navigate("/");
+                  }}
+                >
+                  Sign Out
+                </GlassButton>
+              )}
 
               <GlassButton
                 glassVariant="secondary"
