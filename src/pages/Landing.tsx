@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import { FileText, Users, Zap, Shield, ArrowRight, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,6 +42,40 @@ export default function Landing() {
     "Secure document storage",
     "Mobile-responsive design"
   ];
+
+  // Add a one-time splash loader using sessionStorage
+  const [showSplash, setShowSplash] = useState(true);
+  useEffect(() => {
+    const seen = sessionStorage.getItem("hasSeenSplash");
+    if (seen) {
+      setShowSplash(false);
+      return;
+    }
+    const t = setTimeout(() => {
+      sessionStorage.setItem("hasSeenSplash", "1");
+      setShowSplash(false);
+    }, 1200); // 1.2s splash
+    return () => clearTimeout(t);
+  }, []);
+
+  if (showSplash) {
+    return (
+      <div className="min-h-screen relative">
+        <BackgroundGradient />
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
+          <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+              alt="Emblem of India"
+              className="w-16 h-16 mx-auto mb-4"
+            />
+            <h1 className="text-2xl md:text-3xl font-bold text-white">PM Internship Portal</h1>
+            <p className="text-white/80 mt-2">Loading experience...</p>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
