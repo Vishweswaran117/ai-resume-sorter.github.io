@@ -56,7 +56,9 @@ export const getAllResumes = query({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
     if (!user || user.role !== "admin") {
-      throw new Error("Admin access required");
+      // Instead of throwing (which surfaces as a server error),
+      // return an empty list to avoid noisy errors on the client.
+      return [];
     }
 
     return await ctx.db
