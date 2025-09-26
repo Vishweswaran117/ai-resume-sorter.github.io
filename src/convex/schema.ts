@@ -51,6 +51,7 @@ const schema = defineSchema(
       keySkills: v.optional(v.array(v.string())),
       experience: v.optional(v.number()),
       analyzedAt: v.optional(v.number()),
+      roleApplied: v.string(),
     })
       .index("by_user_id", ["userId"])
       .index("by_status", ["status"])

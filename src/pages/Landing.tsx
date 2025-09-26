@@ -92,13 +92,13 @@ export default function Landing() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Smart Resume
+              Upload your
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {" "}Filtering
+                {" "}resume
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto">
-              Revolutionize your hiring process with AI-powered resume analysis and intelligent candidate matching
+              Submit your resume and details to get started
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

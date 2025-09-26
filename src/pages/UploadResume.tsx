@@ -38,6 +38,7 @@ export default function UploadResume() {
     email: user?.email || "",
     state: "",
     district: "",
+    roleApplied: "",
   });
 
   if (authLoading) {
@@ -96,6 +97,7 @@ export default function UploadResume() {
         state: formData.state,
         district: formData.district,
         resumeFileId: storageId,
+        roleApplied: formData.roleApplied,
       });
 
       toast.success("Resume submitted successfully!");
@@ -163,6 +165,18 @@ export default function UploadResume() {
                         onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                         className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
                         placeholder="Enter your age"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="roleApplied" className="text-white">Role Applied For *</Label>
+                      <Input
+                        id="roleApplied"
+                        value={formData.roleApplied}
+                        onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        placeholder="e.g., Frontend Developer"
                         required
                       />
                     </div>

@@ -12,6 +12,7 @@ export const submitResume = mutation({
     state: v.string(),
     district: v.string(),
     resumeFileId: v.id("_storage"),
+    roleApplied: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
