@@ -92,10 +92,10 @@ export const getUserResumes = query({
       return [];
     }
 
+    // Use the index predicate directly to fetch by userId
     return await ctx.db
       .query("resumes")
-      .withIndex("by_user_id")
-      .filter((q) => q.eq(q.field("userId"), user._id))
+      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
       .collect();
   },
 });
