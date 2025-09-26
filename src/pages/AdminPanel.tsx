@@ -67,6 +67,163 @@ export default function AdminPanel() {
     }
   };
 
+  // Add helper: derive domain from the roleApplied field
+  const getDomain = (roleApplied?: string) => {
+    const txt = (roleApplied || "").toLowerCase();
+    if (/(front\s*end|frontend|react|angular|vue)/.test(txt)) return "Frontend";
+    if (/(back\s*end|backend|node|django|spring|rails)/.test(txt)) return "Backend";
+    if (/(full\s*stack|fullstack)/.test(txt)) return "Full Stack";
+    if (/(data|ml|machine\s*learning|ai|analytics)/.test(txt)) return "Data/ML";
+    if (/(mobile|android|ios|react\s*native|flutter)/.test(txt)) return "Mobile";
+    if (/(design|ui|ux|designer)/.test(txt)) return "Design/UI";
+    if (/(product\s*manager|product\s*management|pm)/.test(txt)) return "Product Management";
+    return "Other";
+  };
+
+  // Group resumes by domain
+  const orderedDomains = [
+    "Frontend",
+    "Backend",
+    "Full Stack",
+    "Data/ML",
+    "Mobile",
+    "Design/UI",
+    "Product Management",
+    "Other",
+  ] as const;
+
+  const groupedByDomain: Record<string, any[]> = (resumes || []).reduce((acc: Record<string, any[]>, r: any) => {
+    const d = getDomain(r.roleApplied);
+    if (!acc[d]) acc[d] = [];
+    acc[d].push(r);
+    return acc;
+  }, {});
+
+  // Small renderer for a resume row (reuses existing visuals)
+  const ResumeRow = ({ resume, onView }: { resume: any; onView: (r: any) => void }) => (
+    <motion.div
+      key={resume._id}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+    >
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <h3 className="text-white font-semibold text-lg">{resume.name}</h3>
+            <Badge
+              variant={
+                resume.status === "shortlisted"
+                  ? "default"
+                  : resume.status === "rejected"
+                  ? "destructive"
+                  : "secondary"
+              }
+              className={
+                resume.status === "shortlisted"
+                  ? "bg-green-500/20 text-green-300 border-green-500/30"
+                  : resume.status === "rejected"
+                  ? "bg-red-500/20 text-red-300 border-red-500/30"
+                  : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+              }
+            >
+              {resume.status}
+            </Badge>
+            {resume.aiScore && (
+              <Badge variant="outline" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                AI Score: {resume.aiScore}%
+              </Badge>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-white/70 mb-3">
+            <div>
+              <span className="font-medium">Age:</span> {resume.age}
+            </div>
+            <div>
+              <span className="font-medium">Gender:</span> {resume.gender}
+            </div>
+            <div>
+              <span className="font-medium">Location:</span> {resume.district}, {resume.state}
+            </div>
+            <div>
+              <span className="font-medium">Submitted:</span> {new Date(resume.submittedAt).toLocaleDateString()}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <span className="font-medium">Email:</span> {resume.email}
+            <span className="font-medium">Phone:</span> {resume.phoneNumber}
+          </div>
+
+          {resume.aiReason && (
+            <div className="mt-3 p-3 bg-white/5 rounded-lg">
+              <p className="text-white/80 text-sm">
+                <span className="font-medium">AI Analysis:</span> {resume.aiReason}
+              </p>
+              {resume.keySkills && resume.keySkills.length > 0 && (
+                <div className="mt-2">
+                  <span className="text-white/70 text-sm font-medium">Key Skills: </span>
+                  {resume.keySkills.map((skill: string, index: number) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="mr-1 mb-1 bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2 ml-4">
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            onClick={() => onView(resume)}
+          >
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
+
+          <GlassButton
+            size="sm"
+            onClick={() => handleRunAnalysis(resume)}
+            className="bg-blue-500/20 border-blue-500/30 text-blue-300 hover:bg-blue-500/30"
+          >
+            <TrendingUp className="w-4 h-4 mr-1" />
+            Run AI Analysis
+          </GlassButton>
+
+          {resume.status === "pending" && (
+            <>
+              <GlassButton
+                size="sm"
+                onClick={() => handleStatusUpdate(resume._id, "shortlisted")}
+                className="bg-green-500/20 border-green-500/30 text-green-300 hover:bg-green-500/30"
+              >
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Shortlist
+              </GlassButton>
+              <GlassButton
+                size="sm"
+                onClick={() => handleStatusUpdate(resume._id, "rejected")}
+                className="bg-red-500/20 border-red-500/30 text-red-300 hover:bg-red-500/30"
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Reject
+              </GlassButton>
+            </>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+
   const stats = resumes ? {
     total: resumes.length,
     pending: resumes.filter(r => r.status === "pending").length,
@@ -182,149 +339,43 @@ export default function AdminPanel() {
             </GlassCard>
           </motion.div>
 
-          {/* Applications List */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <GlassCard className="p-6">
-              <h2 className="text-2xl font-bold text-white mb-6">All Applications</h2>
-              
-              {!resumes || resumes.length === 0 ? (
-                <div className="text-center py-12">
-                  <FileText className="w-16 h-16 text-white/30 mx-auto mb-4" />
-                  <p className="text-white/70">No applications submitted yet</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {resumes.map((resume) => (
-                    <motion.div
-                      key={resume._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-white font-semibold text-lg">{resume.name}</h3>
-                            <Badge
-                              variant={
-                                resume.status === "shortlisted"
-                                  ? "default"
-                                  : resume.status === "rejected"
-                                  ? "destructive"
-                                  : "secondary"
-                              }
-                              className={
-                                resume.status === "shortlisted"
-                                  ? "bg-green-500/20 text-green-300 border-green-500/30"
-                                  : resume.status === "rejected"
-                                  ? "bg-red-500/20 text-red-300 border-red-500/30"
-                                  : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                              }
-                            >
-                              {resume.status}
-                            </Badge>
-                            {resume.aiScore && (
-                              <Badge variant="outline" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                                AI Score: {resume.aiScore}%
-                              </Badge>
-                            )}
-                          </div>
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-white/70 mb-3">
-                            <div>
-                              <span className="font-medium">Age:</span> {resume.age}
+          {/* Applications split by domain */}
+          <div className="relative z-10 p-6">
+            <div className="max-w-7xl mx-auto">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <GlassCard className="p-6">
+                  <h2 className="text-2xl font-bold text-white mb-6">Applications by Domain</h2>
+
+                  {!resumes || resumes.length === 0 ? (
+                    <div className="text-center py-12">
+                      <FileText className="w-16 h-16 text-white/30 mx-auto mb-4" />
+                      <p className="text-white/70">No applications submitted yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {orderedDomains.map((domain) => {
+                        const list = groupedByDomain[domain] || [];
+                        if (list.length === 0) return null;
+                        return (
+                          <div key={domain}>
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="text-xl font-semibold text-white">{domain}</h3>
+                              <span className="text-white/70 text-sm">{list.length} application(s)</span>
                             </div>
-                            <div>
-                              <span className="font-medium">Gender:</span> {resume.gender}
-                            </div>
-                            <div>
-                              <span className="font-medium">Location:</span> {resume.district}, {resume.state}
-                            </div>
-                            <div>
-                              <span className="font-medium">Submitted:</span> {new Date(resume.submittedAt).toLocaleDateString()}
+                            <div className="space-y-4">
+                              {list.map((resume) => (
+                                <ResumeRow key={resume._id} resume={resume} onView={setSelectedResume} />
+                              ))}
                             </div>
                           </div>
-
-                          <div className="flex items-center gap-2 text-sm text-white/70">
-                            <span className="font-medium">Email:</span> {resume.email}
-                            <span className="font-medium">Phone:</span> {resume.phoneNumber}
-                          </div>
-
-                          {resume.aiReason && (
-                            <div className="mt-3 p-3 bg-white/5 rounded-lg">
-                              <p className="text-white/80 text-sm">
-                                <span className="font-medium">AI Analysis:</span> {resume.aiReason}
-                              </p>
-                              {resume.keySkills && resume.keySkills.length > 0 && (
-                                <div className="mt-2">
-                                  <span className="text-white/70 text-sm font-medium">Key Skills: </span>
-                                  {resume.keySkills.map((skill, index) => (
-                                    <Badge
-                                      key={index}
-                                      variant="outline"
-                                      className="mr-1 mb-1 bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs"
-                                    >
-                                      {skill}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col gap-2 ml-4">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                            onClick={() => setSelectedResume(resume)}
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Button>
-                          
-                          <GlassButton
-                            size="sm"
-                            onClick={() => handleRunAnalysis(resume)}
-                            className="bg-blue-500/20 border-blue-500/30 text-blue-300 hover:bg-blue-500/30"
-                          >
-                            <TrendingUp className="w-4 h-4 mr-1" />
-                            Run AI Analysis
-                          </GlassButton>
-                          
-                          {resume.status === "pending" && (
-                            <>
-                              <GlassButton
-                                size="sm"
-                                onClick={() => handleStatusUpdate(resume._id, "shortlisted")}
-                                className="bg-green-500/20 border-green-500/30 text-green-300 hover:bg-green-500/30"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Shortlist
-                              </GlassButton>
-                              <GlassButton
-                                size="sm"
-                                onClick={() => handleStatusUpdate(resume._id, "rejected")}
-                                className="bg-red-500/20 border-red-500/30 text-red-300 hover:bg-red-500/30"
-                              >
-                                <XCircle className="w-4 h-4 mr-1" />
-                                Reject
-                              </GlassButton>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </GlassCard>
-          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </GlassCard>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </div>
 

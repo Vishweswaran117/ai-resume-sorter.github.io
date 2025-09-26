@@ -29,6 +29,7 @@ export default function Dashboard() {
   }
 
   const isAdmin = user.role === "admin";
+  const isLoggedIn = !!user && !user.isAnonymous;
 
   return (
     <div className="min-h-screen">
@@ -108,7 +109,7 @@ export default function Dashboard() {
                 <h3 className="text-xl font-semibold text-white mb-2">Upload Resume</h3>
                 <p className="text-white/70 mb-4">Submit your resume for review</p>
                 <GlassButton
-                  onClick={() => navigate("/upload")}
+                  onClick={() => navigate(isLoggedIn ? "/upload" : "/auth")}
                   className="w-full"
                 >
                   Get Started
