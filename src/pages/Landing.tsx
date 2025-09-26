@@ -54,7 +54,11 @@ export default function Landing() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <img src="/logo.svg" alt="Logo" className="w-10 h-10" />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+              alt="Emblem of India"
+              className="w-10 h-10"
+            />
             <span className="text-2xl font-bold text-white">PM Internship Portal</span>
           </motion.div>
           
@@ -231,7 +235,11 @@ export default function Landing() {
       <footer className="relative z-10 px-6 py-12 border-t border-white/10">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+              alt="Emblem of India"
+              className="w-8 h-8"
+            />
             <span className="text-xl font-bold text-white">PM Internship Portal</span>
           </div>
           <p className="text-white/60">
