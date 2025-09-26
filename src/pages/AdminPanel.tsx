@@ -15,7 +15,10 @@ import { toast } from "sonner";
 export default function AdminPanel() {
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const resumes = useQuery(api.resumes.getAllResumes);
+  const resumes = useQuery(
+    api.resumes.getAllResumes,
+    !authLoading && user && user.role === "admin" ? {} : undefined
+  );
   const updateStatus = useMutation(api.resumes.updateResumeStatus);
   const runAnalysis = useAction(api.ai.analyzeResume);
   
