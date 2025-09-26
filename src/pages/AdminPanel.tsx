@@ -3,6 +3,7 @@ import { GlassButton } from "@/components/GlassButton";
 import { GlassCard } from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation, useAction } from "convex/react";
@@ -23,6 +24,7 @@ export default function AdminPanel() {
   const runAnalysis = useAction(api.ai.analyzeResume);
   
   const [selectedResume, setSelectedResume] = useState<any>(null);
+  const [domainFilter, setDomainFilter] = useState<string>("all");
 
   if (authLoading) {
     return (
@@ -117,7 +119,6 @@ export default function AdminPanel() {
     }
   };
 
-  // Group resumes by domain (using defensive helper)
   const orderedDomains = [
     "Frontend",
     "Backend",
@@ -130,6 +131,10 @@ export default function AdminPanel() {
   ] as const;
 
   const groupedByDomain: Record<string, any[]> = safeGroup(resumes || []);
+
+  // Add: compute the domains list to render based on the selected filter
+  const domainsToRender: Array<string> =
+    domainFilter === "all" ? [...orderedDomains] : [domainFilter];
 
   // Small renderer for a resume row (reuses existing visuals)
   const ResumeRow = ({ resume, onView }: { resume: any; onView: (r: any) => void }) => (
@@ -376,7 +381,24 @@ export default function AdminPanel() {
             <div className="max-w-7xl mx-auto">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <GlassCard className="p-6">
-                  <h2 className="text-2xl font-bold text-white mb-6">Applications by Domain</h2>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <h2 className="text-2xl font-bold text-white">Applications by Domain</h2>
+                    <div className="w-full md:w-64">
+                      <Select value={domainFilter} onValueChange={setDomainFilter}>
+                        <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                          <SelectValue placeholder="Filter by domain" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All</SelectItem>
+                          {orderedDomains.map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {d}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
 
                   {!resumes || resumes.length === 0 ? (
                     <div className="text-center py-12">
@@ -385,7 +407,7 @@ export default function AdminPanel() {
                     </div>
                   ) : (
                     <div className="space-y-8">
-                      {orderedDomains.map((domain) => {
+                      {domainsToRender.map((domain) => {
                         const list = groupedByDomain[domain] || [];
                         if (list.length === 0) return null;
                         return (
