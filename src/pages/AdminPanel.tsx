@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Download, Eye, CheckCircle, XCircle, Clock, Users, TrendingUp, FileText } from "lucide-react";
 import { useState } from "react";
@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const resumes = useQuery(api.resumes.getAllResumes);
   const updateStatus = useMutation(api.resumes.updateResumeStatus);
+  const runAnalysis = useAction(api.ai.analyzeResume);
   
   const [selectedResume, setSelectedResume] = useState<any>(null);
 
@@ -44,6 +45,27 @@ export default function AdminPanel() {
       toast.success(`Resume ${status} successfully`);
     } catch (error) {
       toast.error("Failed to update status");
+    }
+  };
+
+  const handleRunAnalysis = async (resume: any) => {
+    try {
+      await runAnalysis({
+        resumeId: resume._id,
+        resumeText: `Candidate ${resume.name} applying for ${resume.roleApplied}. Highlights: projects, leadership, PM skills.`,
+        candidateInfo: {
+          name: resume.name,
+          age: resume.age,
+          gender: resume.gender,
+          phoneNumber: resume.phoneNumber,
+          email: resume.email,
+          state: resume.state,
+          district: resume.district,
+        },
+      });
+      toast.success("AI analysis started. Results will appear shortly.");
+    } catch (err) {
+      toast.error("Failed to run AI analysis");
     }
   };
 
@@ -227,6 +249,15 @@ export default function AdminPanel() {
                             <Eye className="w-4 h-4 mr-1" />
                             View
                           </Button>
+                          
+                          <GlassButton
+                            size="sm"
+                            onClick={() => handleRunAnalysis(resume)}
+                            className="bg-blue-500/20 border-blue-500/30 text-blue-300 hover:bg-blue-500/30"
+                          >
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                            Run AI Analysis
+                          </GlassButton>
                           
                           {resume.status === "pending" && (
                             <>

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUser } from "./users";
+import { api } from "./_generated/api";
 
 export const submitResume = mutation({
   args: {
@@ -20,12 +21,33 @@ export const submitResume = mutation({
       throw new Error("User must be authenticated");
     }
 
-    return await ctx.db.insert("resumes", {
+    const resumeId = await ctx.db.insert("resumes", {
       ...args,
       userId: user._id,
       status: "pending" as const,
       submittedAt: Date.now(),
     });
+
+    // Schedule AI analysis to run in the background (actions can't be called directly from mutations)
+    await ctx.scheduler.runAfter(
+      0,
+      api.ai.analyzeResume,
+      {
+        resumeId,
+        resumeText: `Candidate ${args.name} applying for ${args.roleApplied}. Experienced with projects, collaboration, and product thinking.`,
+        candidateInfo: {
+          name: args.name,
+          age: args.age,
+          gender: args.gender,
+          phoneNumber: args.phoneNumber,
+          email: args.email,
+          state: args.state,
+          district: args.district,
+        },
+      },
+    );
+
+    return resumeId;
   },
 });
 
