@@ -42,15 +42,6 @@ export default function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-              className="text-white hover:bg-white/10"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
               alt="Emblem of India"
@@ -66,6 +57,24 @@ export default function Dashboard() {
           </motion.div>
           
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+
+            {user?.isAnonymous && (
+              <GlassButton
+                glassVariant="secondary"
+                onClick={() => navigate("/auth")}
+              >
+                Login
+              </GlassButton>
+            )}
+
             <span className="text-white/80">Welcome, {user.name || user.email}</span>
             <Button
               variant="ghost"
