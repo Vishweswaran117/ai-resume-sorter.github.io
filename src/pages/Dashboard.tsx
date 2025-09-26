@@ -6,11 +6,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { FileText, LogOut, Settings, Upload, Users, ArrowLeft } from "lucide-react";
+import { FileText, Upload, Users, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 
 export default function Dashboard() {
-  const { user, signOut, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const userResumes = useQuery(api.resumes.getUserResumes);
 
@@ -76,14 +76,6 @@ export default function Dashboard() {
             )}
 
             <span className="text-white/80">Welcome, {user.name || user.email}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => signOut()}
-              className="text-white hover:bg-white/10"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
       </header>
