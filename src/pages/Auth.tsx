@@ -18,10 +18,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label as UILabel } from "@/components/ui/label";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, Mail, UserX, AlertCircle, ShieldCheck } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 
 interface AuthProps {
   redirectAfterAuth?: string;
@@ -36,6 +38,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [rememberedEmail, setRememberedEmail] = useState<string>("");
+
+  const demoAdminLogin = useMutation(api.users.demoAdminLogin);
 
   // Helper to extract readable error messages
   const parseErrorMessage = (err: unknown): string => {
@@ -157,6 +161,27 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     }
   };
 
+  const handleDemoAdminLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Ensure there is an authenticated session; use anonymous if needed
+      if (!isAuthenticated || !user) {
+        await signIn("anonymous");
+      }
+      await demoAdminLogin({ username: "admin", password: "admin123" });
+      toast.success("Logged in as demo admin.");
+      const redirect = redirectAfterAuth || "/admin";
+      navigate(redirect);
+    } catch (err) {
+      const msg = "Failed to log in as demo admin.";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
 
@@ -256,6 +281,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     >
                       <UserX className="mr-2 h-4 w-4" />
                       Continue as Guest
+                    </Button>
+
+                    {/* Demo Admin Login */}
+                    <Button
+                      type="button"
+                      className="w-full mt-2"
+                      onClick={handleDemoAdminLogin}
+                      disabled={isLoading}
+                    >
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      Demo Admin Login (admin / admin123)
                     </Button>
                   </div>
                 </CardContent>

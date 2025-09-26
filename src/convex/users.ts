@@ -1,5 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { query, QueryCtx } from "./_generated/server";
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 
 /**
  * Get the current signed in user. Returns null if the user is not signed in.
@@ -31,3 +33,30 @@ export const getCurrentUser = async (ctx: QueryCtx) => {
   }
   return await ctx.db.get(userId);
 };
+
+// Add a demo admin login mutation (for demo purposes only)
+export const demoAdminLogin = mutation({
+  args: {
+    username: v.string(),
+    password: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { username, password } = args;
+
+    if (username !== "admin" || password !== "admin123") {
+      throw new Error("Invalid credentials");
+    }
+
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      throw new Error("Not authenticated");
+    }
+
+    await ctx.db.patch(user._id, {
+      role: "admin",
+      name: user.name ?? "Admin",
+    });
+
+    return { ok: true };
+  },
+});
