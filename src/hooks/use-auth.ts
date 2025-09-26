@@ -11,6 +11,16 @@ export function useAuth() {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  // Auto sign in anonymously when not authenticated (no email required)
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated) {
+      // Attempt anonymous sign-in silently
+      signIn("anonymous").catch(() => {
+        // Ignore errors to avoid blocking UI
+      });
+    }
+  }, [isAuthLoading, isAuthenticated, signIn]);
+
   // This effect updates the loading state once auth is loaded and user data is available
   // It ensures we only show content when both authentication state and user data are ready
   useEffect(() => {
