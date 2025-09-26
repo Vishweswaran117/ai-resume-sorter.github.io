@@ -57,7 +57,8 @@ export default function Landing() {
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
               alt="Emblem of India"
-              className="w-10 h-10"
+              className="w-10 h-10 cursor-pointer"
+              onClick={() => navigate("/")}
             />
             <span className="text-2xl font-bold text-white">PM Internship Portal</span>
           </motion.div>
@@ -237,7 +238,8 @@ export default function Landing() {
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
               alt="Emblem of India"
-              className="w-8 h-8"
+              className="w-8 h-8 cursor-pointer"
+              onClick={() => navigate("/")}
             />
             <span className="text-xl font-bold text-white">PM Internship Portal</span>
           </div>
