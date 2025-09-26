@@ -69,6 +69,13 @@ export default function Landing() {
             <div className="flex items-center gap-3">
               <GlassButton
                 glassVariant="secondary"
+                onClick={() => navigate("/auth")}
+              >
+                Login
+              </GlassButton>
+
+              <GlassButton
+                glassVariant="secondary"
                 onClick={() => navigate("/admin")}
               >
                 Admin Portal
