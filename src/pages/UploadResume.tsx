@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
+import { useMutation, useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Upload, FileText, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -26,6 +26,7 @@ export default function UploadResume() {
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const submitResume = useMutation(api.resumes.submitResume);
+  const getUploadUrl = useAction(api.upload.getUploadUrl);
   
   const [isLoading, setIsLoading] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -75,20 +76,17 @@ export default function UploadResume() {
     setIsLoading(true);
 
     try {
-      // Step 1: Get signed upload URL from Convex
-      const uploadUrlResp = await fetch(`${import.meta.env.VITE_CONVEX_URL}/upload_file`, {
-        method: "POST",
-      });
-      const { uploadUrl: signedUrl } = await uploadUrlResp.json();
+      // Use Convex action to get a signed upload URL (no env dependency)
+      const signedUrl = await getUploadUrl();
 
-      // Step 2: Upload the file to Convex storage and get storageId
+      // Upload the file to Convex storage and get storageId
       const uploadResp = await fetch(signedUrl, {
         method: "POST",
         body: resumeFile,
       });
       const { storageId } = await uploadResp.json();
 
-      // Step 3: Submit the resume data
+      // Submit the resume data
       await submitResume({
         name: formData.name,
         age: parseInt(formData.age),

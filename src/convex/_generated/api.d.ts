@@ -20,6 +20,7 @@ import type * as http from "../http.js";
 import type * as internal_resumes from "../internal/resumes.js";
 import type * as resumes from "../resumes.js";
 import type * as seedData from "../seedData.js";
+import type * as upload from "../upload.js";
 import type * as users from "../users.js";
 
 /**
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   "internal/resumes": typeof internal_resumes;
   resumes: typeof resumes;
   seedData: typeof seedData;
+  upload: typeof upload;
   users: typeof users;
 }>;
 export declare const api: FilterApi<
