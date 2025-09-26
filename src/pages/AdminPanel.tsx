@@ -3,6 +3,7 @@ import { GlassButton } from "@/components/GlassButton";
 import { GlassCard } from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { useQuery, useMutation, useAction } from "convex/react";
@@ -67,9 +68,9 @@ export default function AdminPanel() {
     }
   };
 
-  // Add helper: derive domain from the roleApplied field
+  // Strengthen getDomain to guard unexpected values
   const getDomain = (roleApplied?: string) => {
-    const txt = (roleApplied || "").toLowerCase();
+    const txt = typeof roleApplied === "string" ? roleApplied.toLowerCase() : "";
     if (/(front\s*end|frontend|react|angular|vue)/.test(txt)) return "Frontend";
     if (/(back\s*end|backend|node|django|spring|rails)/.test(txt)) return "Backend";
     if (/(full\s*stack|fullstack)/.test(txt)) return "Full Stack";
@@ -92,12 +93,21 @@ export default function AdminPanel() {
     "Other",
   ] as const;
 
-  const groupedByDomain: Record<string, any[]> = (resumes || []).reduce((acc: Record<string, any[]>, r: any) => {
-    const d = getDomain(r.roleApplied);
-    if (!acc[d]) acc[d] = [];
-    acc[d].push(r);
-    return acc;
-  }, {});
+  // Replace direct reduce with safe memoized computation + error capture
+  const { groupedByDomain, domainErrorMsg } = (() => {
+    try {
+      const grouped: Record<string, any[]> = (resumes || []).reduce((acc: Record<string, any[]>, r: any) => {
+        const d = getDomain(r?.roleApplied);
+        if (!acc[d]) acc[d] = [];
+        acc[d].push(r);
+        return acc;
+      }, {});
+      return { groupedByDomain: grouped, domainErrorMsg: null as string | null };
+    } catch (e) {
+      // Fallback: put everything under Other
+      return { groupedByDomain: { Other: resumes || [] } as Record<string, any[]>, domainErrorMsg: "We had trouble categorizing applications. Showing all under 'Other' for now." };
+    }
+  })();
 
   // Small renderer for a resume row (reuses existing visuals)
   const ResumeRow = ({ resume, onView }: { resume: any; onView: (r: any) => void }) => (
@@ -346,6 +356,14 @@ export default function AdminPanel() {
                 <GlassCard className="p-6">
                   <h2 className="text-2xl font-bold text-white mb-6">Applications by Domain</h2>
 
+                  {/* Error notice for domain split issues */}
+                  {domainErrorMsg && (
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertTitle>Display Notice</AlertTitle>
+                      <AlertDescription>{domainErrorMsg}</AlertDescription>
+                    </Alert>
+                  )}
+
                   {!resumes || resumes.length === 0 ? (
                     <div className="text-center py-12">
                       <FileText className="w-16 h-16 text-white/30 mx-auto mb-4" />
@@ -370,6 +388,8 @@ export default function AdminPanel() {
                           </div>
                         );
                       })}
+                      {/* If everything fell back to "Other", ensure it renders */}
+                      {Object.keys(groupedByDomain).every(k => groupedByDomain[k].length === 0) ? null : null}
                     </div>
                   )}
                 </GlassCard>
