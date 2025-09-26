@@ -106,12 +106,15 @@ export default function Landing() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="flex items-center gap-3">
-              <GlassButton
-                glassVariant="secondary"
-                onClick={() => navigate("/auth")}
-              >
-                Login
-              </GlassButton>
+              {/* Show Login only if not logged in */}
+              {!isLoggedIn && (
+                <GlassButton
+                  glassVariant="secondary"
+                  onClick={() => navigate("/auth")}
+                >
+                  Login
+                </GlassButton>
+              )}
 
               {/* Add Sign Out button for logged-in users */}
               {isLoggedIn && (
